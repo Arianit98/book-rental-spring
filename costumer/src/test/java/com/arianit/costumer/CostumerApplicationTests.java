@@ -1,10 +1,10 @@
-package de.arianit.bookRental;
+package com.arianit.costumer;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BookRentalApplicationTests {
+class CostumerApplicationTests {
 
 	@Test
 	void contextLoads() {
