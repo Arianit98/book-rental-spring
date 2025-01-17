@@ -13,6 +13,7 @@
     <url>http://www.example.com</url>
     <modules>
         <module>costumer</module>
+        <module>book</module>
     </modules>
 
     <properties>
