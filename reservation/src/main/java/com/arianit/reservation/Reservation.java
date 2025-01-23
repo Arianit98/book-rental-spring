@@ -1,4 +1,4 @@
-package com.arianit.book;
+package com.arianit.reservation;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,19 +10,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "books")
+@Table(name = "reservations")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Book {
+public class Reservation {
 
     @Id
     @GeneratedValue
     private Long id;
-    private String title;
-    private String author;
-    private int year;
-    private int stockNr;
-    private int reservedNr = 0;
+    private Long costumerId;
+    private Long bookId;
+    private String createdDate;
+    private int durationInDays;
 }

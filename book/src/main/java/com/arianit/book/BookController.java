@@ -49,5 +49,11 @@ public class BookController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}/checkAvailability")
+    public ResponseEntity<?> isAvailable(@PathVariable("id") Long id) {
+        boolean isAvailable = bookService.checkAvailability(id);
+        return ResponseEntity.ok(isAvailable);
+    }
+
 
 }

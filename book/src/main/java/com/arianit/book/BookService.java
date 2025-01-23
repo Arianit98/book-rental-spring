@@ -22,7 +22,7 @@ public class BookService {
     }
 
     public Book getBook(Long id) {
-        return bookRepository.findById(id).orElseThrow();
+        return bookRepository.findById(id).orElse(null);
     }
 
     public void deleteBook(Long id) {
@@ -34,13 +34,19 @@ public class BookService {
                 .map(book -> {
                     book.setTitle(newBook.getTitle());
                     book.setAuthor(newBook.getAuthor());
-                    book.setGenre(newBook.getGenre());
                     book.setYear(newBook.getYear());
-                    book.setLanguage(newBook.getLanguage());
-                    book.setPages(newBook.getPages());
-                    book.setPrice(newBook.getPrice());
+                    book.setStockNr(newBook.getStockNr());
+                    book.setReservedNr(newBook.getReservedNr());
                     return bookRepository.save(book);
                 })
                 .orElseGet(() -> bookRepository.save(newBook));
+    }
+
+    public boolean checkAvailability(Long id) {
+        Book book = getBook(id);
+        if (book == null) {
+            return false;
+        }
+        return book.getStockNr() > book.getReservedNr();
     }
 }

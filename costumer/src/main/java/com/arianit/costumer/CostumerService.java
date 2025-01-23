@@ -7,7 +7,7 @@ import java.util.List;
 @Service
 public class CostumerService {
 
-    private CostumerRepository costumerRepository;
+    private final CostumerRepository costumerRepository;
 
     public CostumerService(CostumerRepository costumerRepository) {
         this.costumerRepository = costumerRepository;
@@ -18,7 +18,7 @@ public class CostumerService {
     }
 
     public Costumer getCostumer(Long id) {
-        return costumerRepository.findById(id).orElseThrow();
+        return costumerRepository.findById(id).orElse(null);
     }
 
     public void deleteCostumer(Long id) {
