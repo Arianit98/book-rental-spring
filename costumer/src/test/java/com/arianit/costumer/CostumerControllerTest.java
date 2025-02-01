@@ -2,8 +2,6 @@ package com.arianit.costumer;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
@@ -17,9 +15,6 @@ class CostumerControllerTest {
 
     @LocalServerPort
     private Integer port;
-
-    @Mock
-    CostumerService costumerService;
 
     private static Integer costumerId;
 
@@ -60,9 +55,6 @@ class CostumerControllerTest {
     @DisplayName("Get costumer by ID")
     @Order(2)
     void getCostumerById() {
-        Costumer costumer = new Costumer(1L, "John Doe", "email@gmail.com", "123456789", "123 Main St", 30);
-        Mockito.when(costumerService.getCostumer(1L)).thenReturn(costumer);
-
         given()
                 .when()
                 .get("api/v1/costumers/{id}", costumerId)

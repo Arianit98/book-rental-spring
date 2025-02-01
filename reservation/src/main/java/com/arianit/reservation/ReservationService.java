@@ -6,6 +6,7 @@ import com.arianit.reservation.client.CostumerClient;
 import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -31,14 +32,14 @@ public class ReservationService {
     }
 
     public Reservation getReservation(Long id) {
-        return reservationRepository.findById(id).orElseThrow();
+        return reservationRepository.findById(id).orElse(null);
     }
 
     public Reservation createReservation(Reservation reservation) {
         ResponseEntity<?> customerResponse;
         try {
             customerResponse = costumerClient.getCostumer(reservation.getCostumerId());
-            if (customerResponse.getBody() == null) {
+            if (customerResponse.getStatusCode() != HttpStatus.OK) {
                 logger.warn("Costumer with id: {} not found", reservation.getCostumerId());
                 return null;
             }

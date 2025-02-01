@@ -1,24 +1,40 @@
 package com.arianit.reservation;
 
-
+import com.github.tomakehurst.wiremock.WireMockServer;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.wiremock.spring.ConfigureWireMock;
+import org.wiremock.spring.EnableWireMock;
+import org.wiremock.spring.InjectWireMock;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static io.restassured.RestAssured.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@EnableWireMock({
+        @ConfigureWireMock(
+                name = "costumer-service",
+                port = 8080),
+        @ConfigureWireMock(
+                name = "book-service",
+                port = 8081)
+})
 class ReservationControllerTest {
 
     @LocalServerPort
-    private int port;
+    private Integer port;
 
     private static Integer reservationId;
-    private static Integer costumerId;
-    private static Integer bookId;
+
+    @InjectWireMock("costumer-service")
+    private WireMockServer mockCostumerService;
+
+    @InjectWireMock("book-service")
+    private WireMockServer mockBookService;
 
     @BeforeEach
     void setUp() {
@@ -41,30 +57,37 @@ class ReservationControllerTest {
     @DisplayName("Create new reservation")
     @Order(1)
     void createReservation() {
+        mockCostumerService.stubFor(get("/api/v1/costumers/1")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"id\": 1, \"name\": \"John Doe\", \"email\": \" \"}")
+                ));
 
-        costumerId = given()
-                .contentType("application/json")
-                .body("{\"name\": \"John Doe\", \"email\": \"john.doe@example.com\", \"phone\": \"123456789\", \"address\": \"123 Main St\", \"age\": 30}")
-                .when()
-                .post("api/v1/costumers")
-                .then()
-                .statusCode(201)
-                .extract()
-                .path("id");
+        mockBookService.stubFor(get("/api/v1/books/1/checkAvailability")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("true")
+                ));
 
-        bookId = given()
-                .contentType("application/json")
-                .body("{\"title\": \"The Great Gatsby\", \"author\": \"F. Scott Fitzgerald\", \"stockNr\": 10, \"year\": 1925, \"reservedNr\": 0}")
-                .when()
-                .post("api/v1/books")
-                .then()
-                .statusCode(201)
-                .extract()
-                .path("id");
+        mockBookService.stubFor(get("/api/v1/books/1")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 0, \"stockNr\": 1, \"year\": 2021}")
+                ));
+
+        mockBookService.stubFor(put("/api/v1/books/1")
+                .willReturn(aResponse()
+                        .withStatus(201)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 1, \"stockNr\": 1, \"year\": 2021}")
+                ));
 
         reservationId = given()
                 .contentType("application/json")
-                .body("{\"customerId\":" + costumerId + ", \"bookId\":" + bookId + ", \"durationInDays\": 7, \"createdDate\": \"2021-10-01\"}")
+                .body("{\"costumerId\": 1, \"bookId\": 1, \"durationInDays\": 7, \"createdDate\": \"2021-10-01\"}")
                 .when()
                 .post("api/v1/reservations")
                 .then()
@@ -88,6 +111,7 @@ class ReservationControllerTest {
     @DisplayName("Update reservation")
     @Order(3)
     void updateReservation() {
+
         given()
                 .contentType("application/json")
                 .body("{\"customerId\": 1, \"bookId\": 1}")
@@ -101,6 +125,20 @@ class ReservationControllerTest {
     @DisplayName("Delete reservation")
     @Order(4)
     void deleteReservation() {
+        mockBookService.stubFor(get("/api/v1/books/1")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 1, \"stockNr\": 1, \"year\": 2021}")
+                ));
+
+        mockBookService.stubFor(put("/api/v1/books/1")
+                .willReturn(aResponse()
+                        .withStatus(201)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 0, \"stockNr\": 1, \"year\": 2021}")
+                ));
+
         given()
                 .when()
                 .delete("api/v1/reservations/" + reservationId)
@@ -207,6 +245,4 @@ class ReservationControllerTest {
                 .then()
                 .statusCode(400);
     }
-
-
 }
