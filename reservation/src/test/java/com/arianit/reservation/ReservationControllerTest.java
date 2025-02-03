@@ -111,10 +111,37 @@ class ReservationControllerTest {
     @DisplayName("Update reservation")
     @Order(3)
     void updateReservation() {
+        mockCostumerService.stubFor(get("/api/v1/costumers/1")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"id\": 1, \"name\": \"John Doe\", \"email\": \" \"}")
+                ));
+
+        mockBookService.stubFor(get("/api/v1/books/1/checkAvailability")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("true")
+                ));
+
+        mockBookService.stubFor(get("/api/v1/books/1")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 0, \"stockNr\": 1, \"year\": 2021}")
+                ));
+
+        mockBookService.stubFor(put("/api/v1/books/1")
+                .willReturn(aResponse()
+                        .withStatus(201)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 1, \"stockNr\": 1, \"year\": 2021}")
+                ));
 
         given()
                 .contentType("application/json")
-                .body("{\"customerId\": 1, \"bookId\": 1}")
+                .body("{\"costumerId\": 1, \"bookId\": 1, \"durationInDays\": 7, \"createdDate\": \"2021-10-01\"}")
                 .when()
                 .put("api/v1/reservations/" + reservationId)
                 .then()
@@ -150,9 +177,21 @@ class ReservationControllerTest {
     @DisplayName("Create new reservation with invalid customer")
     @Order(5)
     void createReservationWithInvalidCustomer() {
+        mockCostumerService.stubFor(get("/api/v1/costumers/100")
+                .willReturn(aResponse()
+                        .withStatus(204)
+                ));
+
+        mockBookService.stubFor(get("/api/v1/books/1/checkAvailability")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("true")
+                ));
+
         given()
                 .contentType("application/json")
-                .body("{\"customerId\": 100, \"bookId\": 1}")
+                .body("{\"costumerId\": 100, \"bookId\": 1, \"durationInDays\": 7, \"createdDate\": \"2021-10-01\"}")
                 .when()
                 .post("api/v1/reservations")
                 .then()
@@ -163,9 +202,21 @@ class ReservationControllerTest {
     @DisplayName("Create new reservation with invalid book")
     @Order(6)
     void createReservationWithInvalidBook() {
+        mockCostumerService.stubFor(get("/api/v1/costumers/1")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"id\": 1, \"name\": \"John Doe\", \"email\": \" \"}")
+                ));
+
+        mockBookService.stubFor(get("/api/v1/books/100/checkAvailability")
+                .willReturn(aResponse()
+                        .withStatus(204)
+                ));
+
         given()
                 .contentType("application/json")
-                .body("{\"customerId\": 1, \"bookId\": 100}")
+                .body("{\"costumerId\": 1, \"bookId\": 100, \"durationInDays\": 7, \"createdDate\": \"2021-10-01\"}")
                 .when()
                 .post("api/v1/reservations")
                 .then()
@@ -198,9 +249,37 @@ class ReservationControllerTest {
     @DisplayName("Update non-existing reservation")
     @Order(9)
     void updateNonExistingReservation() {
+        mockCostumerService.stubFor(get("/api/v1/costumers/1")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"id\": 1, \"name\": \"John Doe\", \"email\": \" \"}")
+                ));
+
+        mockBookService.stubFor(get("/api/v1/books/1/checkAvailability")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("true")
+                ));
+
+        mockBookService.stubFor(get("/api/v1/books/1")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 0, \"stockNr\": 1, \"year\": 2021}")
+                ));
+
+        mockBookService.stubFor(put("/api/v1/books/1")
+                .willReturn(aResponse()
+                        .withStatus(201)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 1, \"stockNr\": 1, \"year\": 2021}")
+                ));
+
         given()
                 .contentType("application/json")
-                .body("{\"customerId\": 1, \"bookId\": 1}")
+                .body("{\"costumerId\": 1, \"bookId\": 1}")
                 .when()
                 .put("api/v1/reservations/100")
                 .then()
@@ -211,35 +290,19 @@ class ReservationControllerTest {
     @DisplayName("Create new reservation with invalid book and customer")
     @Order(10)
     void createReservationWithInvalidBookAndCustomer() {
-        given()
-                .contentType("application/json")
-                .body("{\"customerId\": 100, \"bookId\": 100}")
-                .when()
-                .post("api/v1/reservations")
-                .then()
-                .statusCode(400);
-    }
+        mockCostumerService.stubFor(get("/api/v1/costumers/100")
+                .willReturn(aResponse()
+                        .withStatus(204)
+                ));
 
-    @Test
-    @DisplayName("Create new reservation with invalid book and valid customer")
-    @Order(11)
-    void createReservationWithInvalidBookAndValidCustomer() {
-        given()
-                .contentType("application/json")
-                .body("{\"customerId\": 1, \"bookId\": 100}")
-                .when()
-                .post("api/v1/reservations")
-                .then()
-                .statusCode(400);
-    }
+        mockBookService.stubFor(get("/api/v1/books/100/checkAvailability")
+                .willReturn(aResponse()
+                        .withStatus(204)
+                ));
 
-    @Test
-    @DisplayName("Create new reservation with valid book and invalid customer")
-    @Order(12)
-    void createReservationWithValidBookAndInvalidCustomer() {
         given()
                 .contentType("application/json")
-                .body("{\"customerId\": 100, \"bookId\": 1}")
+                .body("{\"costumerId\": 100, \"bookId\": 100}")
                 .when()
                 .post("api/v1/reservations")
                 .then()

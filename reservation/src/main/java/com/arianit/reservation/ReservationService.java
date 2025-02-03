@@ -3,7 +3,6 @@ package com.arianit.reservation;
 import com.arianit.reservation.client.Book;
 import com.arianit.reservation.client.BookClient;
 import com.arianit.reservation.client.CostumerClient;
-import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -36,28 +35,13 @@ public class ReservationService {
     }
 
     public Reservation createReservation(Reservation reservation) {
-        ResponseEntity<?> customerResponse;
-        try {
-            customerResponse = costumerClient.getCostumer(reservation.getCostumerId());
-            if (customerResponse.getStatusCode() != HttpStatus.OK) {
-                logger.warn("Costumer with id: {} not found", reservation.getCostumerId());
-                return null;
-            }
-            ResponseEntity<Boolean> bookResponse = bookClient.checkAvailability(reservation.getBookId());
-            if (Boolean.FALSE.equals(bookResponse.getBody())) {
-                logger.warn("Book with id: {} not available", reservation.getBookId());
-                return null;
-            }
-            Book book = bookClient.getBook(reservation.getBookId()).getBody();
-            assert book != null;
-            book.setReservedNr(book.getReservedNr() + 1);
-            bookClient.updateBook(reservation.getBookId(), book);
-        } catch (FeignException e) {
-            logger.warn("createReservation() => {}", e.getMessage());
+        if (!costumerExists(reservation.getCostumerId()))
             return null;
-        }
-
-        return reservationRepository.save(reservation);
+        if (!isBookAvailable(reservation.getBookId()))
+            return null;
+        Reservation savedReservation = reservationRepository.save(reservation);
+        increaseBookReservedNr(reservation.getBookId());
+        return savedReservation;
     }
 
     public void deleteReservation(Long id) {
@@ -66,23 +50,68 @@ public class ReservationService {
             logger.warn("Reservation with id: {} not found", id);
             return;
         }
-        Book book = bookClient.getBook(reservation.getBookId()).getBody();
-        assert book != null;
-        book.setReservedNr(book.getReservedNr() - 1);
         reservationRepository.deleteById(id);
-        bookClient.updateBook(reservation.getBookId(), book);
+        decreaseBookReservedNr(reservation.getBookId());
     }
 
     public Reservation updateReservation(Long id, Reservation newReservation) {
-        //TODO: update book reserved number accordingly
+        if (!costumerExists(newReservation.getCostumerId()))
+            return null;
+        if (!isBookAvailable(newReservation.getBookId()))
+            return null;
         return reservationRepository.findById(id)
                 .map(reservation -> {
                     reservation.setCostumerId(newReservation.getCostumerId());
                     reservation.setBookId(newReservation.getBookId());
                     reservation.setCreatedDate(newReservation.getCreatedDate());
                     reservation.setDurationInDays(newReservation.getDurationInDays());
-                    return reservationRepository.save(reservation);
+                    Reservation savedReservation = reservationRepository.save(reservation);
+                    if (!reservation.getBookId().equals(newReservation.getBookId())) {
+                        decreaseBookReservedNr(reservation.getBookId());
+                        increaseBookReservedNr(newReservation.getBookId());
+                    }
+                    return savedReservation;
                 })
-                .orElseGet(() -> reservationRepository.save(newReservation));
+                .orElseGet(() -> {
+                    Reservation savedReservation = reservationRepository.save(newReservation);
+                    increaseBookReservedNr(newReservation.getBookId());
+                    return savedReservation;
+                });
+    }
+
+    public void increaseBookReservedNr(Long bookId) {
+        Book book = bookClient.getBook(bookId).getBody();
+        assert book != null;
+        book.setReservedNr(book.getReservedNr() + 1);
+        bookClient.updateBook(bookId, book);
+    }
+
+    public void decreaseBookReservedNr(Long bookId) {
+        Book book = bookClient.getBook(bookId).getBody();
+        assert book != null;
+        book.setReservedNr(book.getReservedNr() - 1);
+        bookClient.updateBook(bookId, book);
+    }
+
+    public boolean isBookAvailable(Long bookId) {
+        ResponseEntity<Boolean> bookResponse = bookClient.checkAvailability(bookId);
+        if (bookResponse.getStatusCode() != HttpStatus.OK) {
+            logger.warn("Book with id: {} not found", bookId);
+            return false;
+        }
+        if (Boolean.FALSE.equals(bookResponse.getBody())) {
+            logger.warn("Book with id: {} is not available", bookId);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean costumerExists(Long costumerId) {
+        ResponseEntity<?> customerResponse = costumerClient.getCostumer(costumerId);
+        if (customerResponse.getStatusCode() != HttpStatus.OK) {
+            logger.warn("Costumer with id: {} not found", costumerId);
+            return false;
+        }
+        return true;
     }
 }

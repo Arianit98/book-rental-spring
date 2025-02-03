@@ -43,6 +43,9 @@ public class ReservationController {
     @PutMapping("{id}")
     public ResponseEntity<?> updateReservation(@PathVariable("id") Long id, @RequestBody Reservation newReservation) {
         Reservation reservation = reservationService.updateReservation(id, newReservation);
+        if (reservation == null) {
+            return ResponseEntity.badRequest().body("Costumer not found or book is not available");
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
     }
 
