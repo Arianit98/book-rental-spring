@@ -1,0 +1,10 @@
+INSERT INTO books (id, title, author, reserved_nr, stock_nr, year) VALUES (1, 'Book Title 1', 'Author Name 1', 0, 5, 2021);
+INSERT INTO books (id, title, author, reserved_nr, stock_nr, year) VALUES (2, 'Book Title 2', 'Author Name 2', 0, 5, 2021);
+INSERT INTO books (id, title, author, reserved_nr, stock_nr, year) VALUES (3, 'Book Title 3', 'Author Name 3', 0, 5, 2021);
+INSERT INTO books (id, title, author, reserved_nr, stock_nr, year) VALUES (4, 'Book Title 4', 'Author Name 4', 0, 5, 2021);
+INSERT INTO books (id, title, author, reserved_nr, stock_nr, year) VALUES (5, 'Book Title 5', 'Author Name 5', 0, 5, 2021);
+INSERT INTO books (id, title, author, reserved_nr, stock_nr, year) VALUES (6, 'Book Title 6', 'Author Name 6', 0, 5, 2021);
+INSERT INTO books (id, title, author, reserved_nr, stock_nr, year) VALUES (7, 'Book Title 7', 'Author Name 7', 0, 5, 2021);
+INSERT INTO books (id, title, author, reserved_nr, stock_nr, year) VALUES (8, 'Book Title 8', 'Author Name 8', 0, 5, 2021);
+INSERT INTO books (id, title, author, reserved_nr, stock_nr, year) VALUES (9, 'Book Title 9', 'Author Name 9', 0, 5, 2021);
+INSERT INTO books (id, title, author, reserved_nr, stock_nr, year) VALUES (10, 'Book Title 10', 'Author Name 10', 0, 5, 2021);
