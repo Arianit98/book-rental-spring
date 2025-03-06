@@ -3,6 +3,7 @@ package com.arianit.book;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookService {
@@ -29,17 +30,18 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    public Book updateBook(Long id, Book newBook) {
-        return bookRepository.findById(id)
-                .map(book -> {
-                    book.setTitle(newBook.getTitle());
-                    book.setAuthor(newBook.getAuthor());
-                    book.setYear(newBook.getYear());
-                    book.setStockNr(newBook.getStockNr());
-                    book.setReservedNr(newBook.getReservedNr());
-                    return bookRepository.save(book);
-                })
-                .orElseGet(() -> bookRepository.save(newBook));
+    public Book updateBook(Book book) {
+        Optional<Book> entityOpt = bookRepository.findById(book.getId());
+        if (entityOpt.isEmpty()) {
+            return null;
+        }
+        Book entity = entityOpt.get();
+        entity.setTitle(book.getTitle());
+        entity.setAuthor(book.getAuthor());
+        entity.setYear(book.getYear());
+        entity.setStockNr(book.getStockNr());
+        entity.setReservedNr(book.getReservedNr());
+        return bookRepository.save(entity);
     }
 
     public boolean checkAvailability(Long id) {

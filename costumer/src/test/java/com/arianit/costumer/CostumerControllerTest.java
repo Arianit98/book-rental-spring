@@ -39,16 +39,15 @@ class CostumerControllerTest {
     @DisplayName("Create new costumer")
     @Order(1)
     void createCostumer() {
-        costumerId = given()
+        costumerId = Integer.valueOf(given()
                 .contentType("application/json")
                 .body("{\"name\": \"John Doe\", \"email\": \"john.doe@example.com\", \"phone\": \"123456789\", \"address\": \"123 Main St\", \"age\": 30}")
                 .when()
                 .post("api/v1/costumers")
                 .then()
                 .statusCode(201)
-                .body("name", equalTo("John Doe"))
-                .extract()
-                .path("id");
+                .extract().header("Location")
+                .replaceAll("http://localhost:" + port + "/api/v1/costumers/", ""));
     }
 
     @Test
@@ -66,13 +65,14 @@ class CostumerControllerTest {
     @DisplayName("Update existing costumer")
     @Order(3)
     void updateCostumer() {
+        String bodyStr = String.format("{\"id\": %d, \"name\": \"Jane Doe\", \"email\": \"jane.doe@example.com\", \"phone\": \"987654321\", \"address\": \"456 Elm St\", \"age\": 25}", costumerId);
         given()
                 .contentType("application/json")
-                .body("{\"name\": \"Jane Doe\", \"email\": \"jane.doe@example.com\", \"phone\": \"987654321\", \"address\": \"456 Elm St\", \"age\": 25}")
+                .body(bodyStr)
                 .when()
-                .put("api/v1/costumers/{id}", costumerId)
+                .put("api/v1/costumers")
                 .then()
-                .statusCode(201);
+                .statusCode(200);
     }
 
     @Test
@@ -126,11 +126,11 @@ class CostumerControllerTest {
     void updateNonExistingCostumer() {
         given()
                 .contentType("application/json")
-                .body("{\"name\": \"Jane Doe\", \"email\": \"jane.doe@example.com\", \"phone\": \"987654321\", \"address\": \"456 Elm St\", \"age\": 25}")
+                .body("{\"id\": 999, \"name\": \"Jane Doe\", \"email\": \"jane.doe@example.com\", \"phone\": \"987654321\", \"address\": \"456 Elm St\", \"age\": 25}")
                 .when()
-                .put("api/v1/costumers/{id}", 100)
+                .put("api/v1/costumers")
                 .then()
-                .statusCode(201);
+                .statusCode(404);
     }
 
 

@@ -39,15 +39,15 @@ class BookControllerTest {
     @DisplayName("Create new book")
     @Order(1)
     void createBook() {
-        bookId = given()
+        bookId = Integer.valueOf(given()
                 .contentType("application/json")
                 .body("{\"title\": \"The Great Gatsby\", \"author\": \"F. Scott Fitzgerald\", \"stockNr\": 10, \"year\": 1925, \"reservedNr\": 0}")
                 .when()
                 .post("api/v1/books")
                 .then()
                 .statusCode(201)
-                .extract()
-                .path("id");
+                .extract().header("Location")
+                .replaceAll("http://localhost:" + port + "/api/v1/books/", ""));
     }
 
     @Test
@@ -65,13 +65,14 @@ class BookControllerTest {
     @DisplayName("Update book")
     @Order(3)
     void updateBook() {
+        String bodyStr = String.format("{\"id\": %d, \"title\": \"The Great Gatsby\", \"author\": \"F. Scott Fitzgerald\", \"stockNr\": 10, \"year\": 1925, \"reservedNr\": 0}", bookId);
         given()
                 .contentType("application/json")
-                .body("{\"title\": \"The Great Gatsby\", \"author\": \"F. Scott Fitzgerald\", \"stockNr\": 10, \"year\": 1925, \"reservedNr\": 0}")
+                .body(bodyStr)
                 .when()
-                .put("api/v1/books/" + bookId)
+                .put("api/v1/books")
                 .then()
-                .statusCode(201);
+                .statusCode(200);
     }
 
     @Test
@@ -134,13 +135,14 @@ class BookControllerTest {
     @DisplayName("Update non-existing book")
     @Order(8)
     void updateNonExistingBook() {
+
         given()
                 .contentType("application/json")
-                .body("{\"title\": \"The Great Gatsby\", \"author\": \"F. Scott Fitzgerald\", \"stockNr\": 10, \"year\": 1925, \"reservedNr\": 0}")
+                .body("{\"id\": 999,\"title\": \"The Great Gatsby\", \"author\": \"F. Scott Fitzgerald\", \"stockNr\": 10, \"year\": 1925, \"reservedNr\": 0}")
                 .when()
-                .put("api/v1/books/100")
+                .put("api/v1/books")
                 .then()
-                .statusCode(201);
+                .statusCode(404);
     }
 
     @Test

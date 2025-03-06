@@ -3,6 +3,7 @@ package com.arianit.costumer;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CostumerService {
@@ -25,17 +26,18 @@ public class CostumerService {
         costumerRepository.deleteById(id);
     }
 
-    public Costumer updateCostumer(Long id, Costumer newCostumer) {
-        return costumerRepository.findById(id)
-                .map(costumer -> {
-                    costumer.setName(newCostumer.getName());
-                    costumer.setEmail(newCostumer.getEmail());
-                    costumer.setPhone(newCostumer.getPhone());
-                    costumer.setAddress(newCostumer.getAddress());
-                    costumer.setAge(newCostumer.getAge());
-                    return costumerRepository.save(costumer);
-                })
-                .orElseGet(() -> costumerRepository.save(newCostumer));
+    public Costumer updateCostumer(Costumer costumer) {
+        Optional<Costumer> costumerOptional = costumerRepository.findById(costumer.getId());
+        if (costumerOptional.isEmpty()) {
+            return null;
+        }
+        Costumer entity = costumerOptional.get();
+        entity.setName(costumer.getName());
+        entity.setEmail(costumer.getEmail());
+        entity.setAddress(costumer.getAddress());
+        entity.setPhone(costumer.getPhone());
+        entity.setAge(costumer.getAge());
+        return costumerRepository.save(entity);
     }
 
     public List<Costumer> getCostumers() {

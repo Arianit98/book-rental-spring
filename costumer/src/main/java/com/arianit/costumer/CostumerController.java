@@ -3,7 +3,9 @@ package com.arianit.costumer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -31,15 +33,22 @@ public class CostumerController {
     }
 
     @PostMapping
-    public ResponseEntity<Costumer> createCostumer(@RequestBody Costumer newCostumer) {
+    public ResponseEntity<?> createCostumer(@RequestBody Costumer newCostumer) {
         Costumer costumer = costumerService.createCostumer(newCostumer);
-        return ResponseEntity.status(HttpStatus.CREATED).body(costumer);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(costumer.getId())
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Costumer> updateCostumer(@PathVariable("id") Long id, @RequestBody Costumer newCostumer) {
-        Costumer costumer = costumerService.updateCostumer(id, newCostumer);
-        return ResponseEntity.status(HttpStatus.CREATED).body(costumer);
+    @PutMapping()
+    public ResponseEntity<Costumer> updateCostumer(@RequestBody Costumer costumer) {
+        costumer = costumerService.updateCostumer(costumer);
+        if (costumer == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(costumer);
     }
 
     @DeleteMapping("/{id}")

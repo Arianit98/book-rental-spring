@@ -1,9 +1,10 @@
 package com.arianit.book;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -33,14 +34,21 @@ public class BookController {
 
     @PostMapping
     public ResponseEntity<?> createBook(@RequestBody Book newBook) {
-        Book book = bookService.createBook(newBook);
-        return ResponseEntity.status(HttpStatus.CREATED).body(book);
+        newBook = bookService.createBook(newBook);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(newBook.getId())
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateBook(@PathVariable("id") Long id, @RequestBody Book newBook) {
-        Book book = bookService.updateBook(id, newBook);
-        return ResponseEntity.status(HttpStatus.CREATED).body(book);
+    @PutMapping()
+    public ResponseEntity<?> updateBook(@RequestBody Book newBook) {
+        newBook = bookService.updateBook(newBook);
+        if (newBook == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(newBook);
     }
 
     @DeleteMapping("/{id}")
