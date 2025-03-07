@@ -78,22 +78,22 @@ class ReservationControllerTest {
                         .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 0, \"stockNr\": 1, \"year\": 2021}")
                 ));
 
-        mockBookService.stubFor(put("/api/v1/books/1")
+        mockBookService.stubFor(put("/api/v1/books")
                 .willReturn(aResponse()
-                        .withStatus(201)
+                        .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 1, \"stockNr\": 1, \"year\": 2021}")
                 ));
 
-        reservationId = given()
+        reservationId = Integer.valueOf(given()
                 .contentType("application/json")
                 .body("{\"costumerId\": 1, \"bookId\": 1, \"durationInDays\": 7, \"createdDate\": \"2021-10-01\"}")
                 .when()
                 .post("api/v1/reservations")
                 .then()
                 .statusCode(201)
-                .extract()
-                .path("id");
+                .extract().header("Location")
+                .replace("http://localhost:" + port + "/api/v1/reservations/", ""));
     }
 
     @Test
@@ -132,20 +132,22 @@ class ReservationControllerTest {
                         .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 0, \"stockNr\": 1, \"year\": 2021}")
                 ));
 
-        mockBookService.stubFor(put("/api/v1/books/1")
+        mockBookService.stubFor(put("/api/v1/books")
                 .willReturn(aResponse()
-                        .withStatus(201)
+                        .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 1, \"stockNr\": 1, \"year\": 2021}")
                 ));
 
+        String bodyStr = String.format("{\"id\": %d, \"costumerId\": 1, \"bookId\": 1, \"durationInDays\": 7, \"createdDate\": \"2021-10-01\"}", reservationId);
+
         given()
                 .contentType("application/json")
-                .body("{\"costumerId\": 1, \"bookId\": 1, \"durationInDays\": 7, \"createdDate\": \"2021-10-01\"}")
+                .body(bodyStr)
                 .when()
-                .put("api/v1/reservations/" + reservationId)
+                .put("api/v1/reservations")
                 .then()
-                .statusCode(201);
+                .statusCode(200);
     }
 
     @Test
@@ -159,9 +161,9 @@ class ReservationControllerTest {
                         .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 1, \"stockNr\": 1, \"year\": 2021}")
                 ));
 
-        mockBookService.stubFor(put("/api/v1/books/1")
+        mockBookService.stubFor(put("/api/v1/books")
                 .willReturn(aResponse()
-                        .withStatus(201)
+                        .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 0, \"stockNr\": 1, \"year\": 2021}")
                 ));
@@ -270,20 +272,20 @@ class ReservationControllerTest {
                         .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 0, \"stockNr\": 1, \"year\": 2021}")
                 ));
 
-        mockBookService.stubFor(put("/api/v1/books/1")
+        mockBookService.stubFor(put("/api/v1/books")
                 .willReturn(aResponse()
-                        .withStatus(201)
+                        .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody("{\"id\": 1, \"title\": \"Book Title\", \"author\": \"Author Name\", \"reservedNr\": 1, \"stockNr\": 1, \"year\": 2021}")
                 ));
 
         given()
                 .contentType("application/json")
-                .body("{\"costumerId\": 1, \"bookId\": 1}")
+                .body("{\"id\": 100, \"costumerId\": 1, \"bookId\": 1}")
                 .when()
-                .put("api/v1/reservations/100")
+                .put("api/v1/reservations")
                 .then()
-                .statusCode(201);
+                .statusCode(400);
     }
 
     @Test

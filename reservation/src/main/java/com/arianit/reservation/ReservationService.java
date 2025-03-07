@@ -54,12 +54,12 @@ public class ReservationService {
         decreaseBookReservedNr(reservation.getBookId());
     }
 
-    public Reservation updateReservation(Long id, Reservation newReservation) {
+    public Reservation updateReservation(Reservation newReservation) {
         if (!costumerExists(newReservation.getCostumerId()))
             return null;
         if (!isBookAvailable(newReservation.getBookId()))
             return null;
-        return reservationRepository.findById(id)
+        return reservationRepository.findById(newReservation.getId())
                 .map(reservation -> {
                     reservation.setCostumerId(newReservation.getCostumerId());
                     reservation.setBookId(newReservation.getBookId());
@@ -72,25 +72,21 @@ public class ReservationService {
                     }
                     return savedReservation;
                 })
-                .orElseGet(() -> {
-                    Reservation savedReservation = reservationRepository.save(newReservation);
-                    increaseBookReservedNr(newReservation.getBookId());
-                    return savedReservation;
-                });
+                .orElse(null);
     }
 
     public void increaseBookReservedNr(Long bookId) {
         Book book = bookClient.getBook(bookId).getBody();
         assert book != null;
         book.setReservedNr(book.getReservedNr() + 1);
-        bookClient.updateBook(bookId, book);
+        bookClient.updateBook(book);
     }
 
     public void decreaseBookReservedNr(Long bookId) {
         Book book = bookClient.getBook(bookId).getBody();
         assert book != null;
         book.setReservedNr(book.getReservedNr() - 1);
-        bookClient.updateBook(bookId, book);
+        bookClient.updateBook(book);
     }
 
     public boolean isBookAvailable(Long bookId) {

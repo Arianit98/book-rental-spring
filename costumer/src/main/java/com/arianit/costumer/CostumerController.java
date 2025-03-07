@@ -42,7 +42,7 @@ public class CostumerController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<Costumer> updateCostumer(@RequestBody Costumer costumer) {
         costumer = costumerService.updateCostumer(costumer);
         if (costumer == null) {

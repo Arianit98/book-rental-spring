@@ -12,8 +12,8 @@ public interface BookClient {
     @GetMapping("/{id}")
     ResponseEntity<Book> getBook(@PathVariable("id") Long id);
 
-    @PutMapping("/{id}")
-    ResponseEntity<Book> updateBook(@PathVariable("id") Long id, Book book);
+    @PutMapping
+    ResponseEntity<Book> updateBook(Book book);
 
     @GetMapping("/{id}/checkAvailability")
     ResponseEntity<Boolean> checkAvailability(@PathVariable("id") Long id);

@@ -42,7 +42,7 @@ public class BookController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<?> updateBook(@RequestBody Book newBook) {
         newBook = bookService.updateBook(newBook);
         if (newBook == null) {

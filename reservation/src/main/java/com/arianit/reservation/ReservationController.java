@@ -1,9 +1,10 @@
 package com.arianit.reservation;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -37,16 +38,17 @@ public class ReservationController {
         if (reservation == null) {
             return ResponseEntity.badRequest().body("Costumer not found or book is not available");
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(reservation.getId()).toUri();
+        return ResponseEntity.created(location).build();
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<?> updateReservation(@PathVariable("id") Long id, @RequestBody Reservation newReservation) {
-        Reservation reservation = reservationService.updateReservation(id, newReservation);
+    @PutMapping
+    public ResponseEntity<?> updateReservation(@RequestBody Reservation newReservation) {
+        Reservation reservation = reservationService.updateReservation(newReservation);
         if (reservation == null) {
-            return ResponseEntity.badRequest().body("Costumer not found or book is not available");
+            return ResponseEntity.badRequest().body("Reservation not found or costumer/book is not available");
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
+        return ResponseEntity.ok(reservation);
     }
 
     @DeleteMapping("{id}")
