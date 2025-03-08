@@ -181,7 +181,7 @@ class ReservationControllerTest {
     void createReservationWithInvalidCustomer() {
         mockCostumerService.stubFor(get("/api/v1/costumers/100")
                 .willReturn(aResponse()
-                        .withStatus(204)
+                        .withStatus(404)
                 ));
 
         mockBookService.stubFor(get("/api/v1/books/1/checkAvailability")
@@ -294,7 +294,7 @@ class ReservationControllerTest {
     void createReservationWithInvalidBookAndCustomer() {
         mockCostumerService.stubFor(get("/api/v1/costumers/100")
                 .willReturn(aResponse()
-                        .withStatus(204)
+                        .withStatus(404)
                 ));
 
         mockBookService.stubFor(get("/api/v1/books/100/checkAvailability")

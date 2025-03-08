@@ -103,9 +103,14 @@ public class ReservationService {
     }
 
     public boolean costumerExists(Long costumerId) {
-        ResponseEntity<?> customerResponse = costumerClient.getCostumer(costumerId);
-        if (customerResponse.getStatusCode() != HttpStatus.OK) {
-            logger.warn("Costumer with id: {} not found", costumerId);
+        try {
+            ResponseEntity<?> customerResponse = costumerClient.getCostumer(costumerId);
+            if (customerResponse.getStatusCode() != HttpStatus.OK) {
+                logger.warn("Costumer with id: {} not found", costumerId);
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("Error while checking costumer with id: {}", costumerId, e);
             return false;
         }
         return true;
