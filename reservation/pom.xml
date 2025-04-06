@@ -13,9 +13,6 @@
     <description>Reservation service fo the book rental app</description>
 
     <properties>
-        <java.version>21</java.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
     </properties>
 
