@@ -10,19 +10,7 @@
     <artifactId>costumer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>costumer</name>
-    <description>Costumer service fo the book rental app</description>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <description>Costumer service for the book rental app</description>
 
     <dependencies>
         <dependency>

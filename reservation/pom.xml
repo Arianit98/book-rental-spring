@@ -10,7 +10,7 @@
     <artifactId>reservation</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>reservation</name>
-    <description>Reservation service fo the book rental app</description>
+    <description>Reservation service for the book rental app</description>
 
     <properties>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
@@ -18,13 +18,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
