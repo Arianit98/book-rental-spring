@@ -71,7 +71,9 @@
                     <groupId>org.graalvm.buildtools</groupId>
                     <artifactId>native-maven-plugin</artifactId>
                     <configuration>
-                        <mainClass>com.arianit.book.BookApplication</mainClass>
+                        <buildArgs>
+                            <buildArg>--enable-monitoring=jvmstat,heapdump</buildArg>
+                        </buildArgs>
                     </configuration>
                 </plugin>
             </plugins>

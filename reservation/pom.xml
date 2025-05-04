@@ -98,6 +98,15 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.2</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.graalvm.buildtools</groupId>
+                    <artifactId>native-maven-plugin</artifactId>
+                    <configuration>
+                        <buildArgs>
+                            <buildArg>--enable-monitoring=jvmstat,heapdump</buildArg>
+                        </buildArgs>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
