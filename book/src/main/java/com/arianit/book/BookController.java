@@ -62,6 +62,4 @@ public class BookController {
         boolean isAvailable = bookService.checkAvailability(id);
         return ResponseEntity.ok(isAvailable);
     }
-
-
 }
