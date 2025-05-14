@@ -1,17 +1,13 @@
 package com.arianit.book;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "books")
+@Entity(name = "books")
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Book {
 
     @Id
