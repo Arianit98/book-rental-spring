@@ -1,50 +1,60 @@
-# Book Rental Spring
+# Book Rental Application
 
-Book rental is a simple application for renting books. It is written in Java using Spring Boot. This project follows the
-microservice architecture.
+This project is a book rental system built using a microservices architecture. It consists of three main microservices:
 
-## Build
+## Microservices
 
-To build the entire code, you need to run the following commands from the root project
+### 1. Book Service
 
-```shell
+Manages book inventory, details, and availability.
+
+### 2. Costumer Service
+
+Handles customer information, registration, and management.
+
+### 3. Reservation Service
+
+Manages book reservations, rental periods, and returns.
+
+## Running the Application
+
+Each microservice is a separate Spring Boot project. Navigate to the respective folder (`book/`, `costumer/`,
+`reservation/`) and use the following commands to build and run each service:
+
+```
+# Build the service
 mvn clean install
-```
 
-## Running the application locally
-
-Since this application is seperated in three services. All of them need to be started separately.
-
-There are several ways to run a Spring Boot application on your local machine. One way is to execute the `main` method
-from your IDE for each of the services.
-
-Alternatively you can use
-the [Spring Boot Maven plugin](https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-maven-plugin.html)
-like so:
-
-* In a new terminal, run the costumer service:
-
-```shell
-cd costumer
+# Run the service
 mvn spring-boot:run
+# or
+java -jar target/<service-name>-0.0.1-SNAPSHOT.jar
 ```
 
-* In a new terminal, run the book service:
+Refer to the individual README files in each service folder for more details.
 
-```shell
-cd book
-mvn spring-boot:run
-```
+## API Visualization
 
-* In a new terminal, run the reservation service:
+The API endpoints for each microservice are documented and visualized using Swagger UI (Springdoc OpenAPI). After
+starting a service, access its Swagger UI at:
 
-```shell
-cd reservation
-mvn spring-boot:run
-```
+- Book Service: http://localhost:<book-port>/swagger-ui.html
+- Costumer Service: http://localhost:<costumer-port>/swagger-ui.html
+- Reservation Service: http://localhost:<reservation-port>/swagger-ui.html
 
-## Ports
+## API Documentation Screenshots
 
-* **costumer service** *(running on port 8080)*
-* **book service** *(running on port 8081)*
-* **reservation service** *(running on port 8082)*
+Below are actual screenshots from Swagger UI for each microservice, located in the `docs/screenshots` directory. These
+illustrate the available REST endpoints and their documentation as exposed by Spring Boot and Springdoc OpenAPI.
+
+### Book Service Endpoints
+
+![Book Service Endpoints](docs/screenshots/book-endpoints.png)
+
+### Costumer Service Endpoints
+
+![Costumer Service Endpoints](docs/screenshots/costumer-endpoints.png)
+
+### Reservation Service Endpoints
+
+![Reservation Service Endpoints](docs/screenshots/reservation-endpoints.png)
