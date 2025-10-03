@@ -10,9 +10,7 @@ WORKDIR /code/book
 RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.8.1:go-offline
 COPY book/src /code/book/src
 
-RUN ./mvnw package -DskipTests=true
-RUN ./mvnw spring-boot:process-aot
-RUN ./mvnw -Pnative native:compile -DskipTests=true
+RUN ./mvnw package -DskipTests=true -Pnative
 
 FROM --platform=linux/amd64 ubuntu:22.04
 
