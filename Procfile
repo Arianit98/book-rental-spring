@@ -1,0 +1,1 @@
+web: java \$JAVA_OPTS -jar reservation/target/reservation-0.0.1-SNAPSHOT.jar
