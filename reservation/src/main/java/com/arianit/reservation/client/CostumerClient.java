@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "${costumer.client.name}", url = "${costumer.client.url}")
+@FeignClient(name = "${costumer.client.name}", url = "${costumer.client.url}/api/v1/costumers")
 public interface CostumerClient {
 
     @GetMapping
