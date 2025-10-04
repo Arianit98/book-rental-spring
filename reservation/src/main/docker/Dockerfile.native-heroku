@@ -1,0 +1,41 @@
+## Stage 1: Build with GraalVM
+FROM --platform=linux/amd64 ghcr.io/graalvm/graalvm-community:21 AS build
+COPY --chown=root:root pom.xml /code/
+COPY --chown=root:root parse_db_url_heroku.sh /code/
+COPY --chown=root:root reservation/mvnw /code/reservation/mvnw
+COPY --chown=root:root reservation/.mvn /code/reservation/.mvn
+COPY --chown=root:root reservation/pom.xml /code/reservation/
+USER root
+WORKDIR /code/reservation
+RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.8.1:go-offline
+COPY reservation/src /code/reservation/src
+RUN ./mvnw package -DskipTests=true -Pnative
+
+FROM --platform=linux/amd64 ubuntu:22.04
+
+# Install minimal runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser
+
+WORKDIR /app
+
+# Copy native executable directly with the expected name
+COPY --from=build /code/reservation/target/reservation /app/application
+COPY --from=build /code/parse_db_url_heroku.sh /app/parse_db_url_heroku.sh
+
+# Set permissions
+RUN chmod 755 /app/application /app/parse_db_url_heroku.sh && \
+    chown -R appuser:appuser /app
+
+USER appuser
+
+USER 65532:65532
+
+EXPOSE 8080
+
+CMD ["/bin/bash", "-c", ". ./parse_db_url_heroku.sh && ./application"]
+
