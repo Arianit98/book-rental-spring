@@ -12,10 +12,6 @@
     <name>reservation</name>
     <description>Reservation service for the book rental app</description>
 
-    <properties>
-        <spring-cloud.version>2024.0.0</spring-cloud.version>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>

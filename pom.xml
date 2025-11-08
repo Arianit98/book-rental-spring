@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.4</version>
+        <version>3.5.7</version>
     </parent>
 
     <name>book-rental-spring</name>
@@ -26,7 +26,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <spring.boot.version>3.4.4</spring.boot.version>
+        <spring.boot.version>3.5.7</spring.boot.version>
+        <spring-cloud.version>2025.0.0</spring-cloud.version>
     </properties>
 
     <build>
